@@ -1,6 +1,6 @@
 package zstreams
 
-import com.gu.contentapi.client.model.v1.Content
+import com.gu.contentapi.client.model.v1.{CapiDateTime, Content}
 import zio._
 import zstreams.service.{Capi, CapiLive, ConfigLive}
 
@@ -11,14 +11,15 @@ object Main extends ZIOAppDefault {
 
   private val maxResults = 15
 
+  private def formatted(dateTime: CapiDateTime) =
+    OffsetDateTime.parse(dateTime.iso8601).format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+
   private def show(index: Long, content: Content) =
     Console
       .printLine(
         Seq(
           s"${index + 1}.",
-          content.webPublicationDate
-            .map(dateTime => OffsetDateTime.parse(dateTime.iso8601).format(DateTimeFormatter.ofPattern("d MMMM yyyy")))
-            .getOrElse("Undated"),
+          content.webPublicationDate.map(formatted).getOrElse("Undated"),
           content.webTitle,
           content.webUrl
         ).mkString("\n", "\n", "\n")
